@@ -1,0 +1,53 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: limgyeol-cluster
+  region: ap-northeast-2
+  version: "1.34"
+
+vpc:
+  subnets:
+    private:
+      ap-northeast-2a: { id: private-a }
+      ap-northeast-2b: { id: private-b }
+      ap-northeast-2c: { id: private-c }
+
+managedNodeGroups:
+  - name: skills-app
+    instanceType: t3.medium
+    instanceName: skills-app
+    minSize: 2
+    desiredCapacity: 2
+    maxSize: 20
+    volumeSize: 20
+    privateNetworking: true
+    labels: { skills/dedicated: app }
+    iam:
+      withAddonPolicies:
+        certManager: true
+        imageBuilder: true
+        autoScaler: true
+        awsLoadBalancerController: true
+        cloudWatch: true
+
+  - name: skills-addon
+    instanceType: t3.medium
+    instanceName: skills-addon
+    minSize: 2
+    desiredCapacity: 2
+    maxSize: 20
+    volumeSize: 20
+    privateNetworking: true
+    labels: { skills/dedicated: addon }
+    iam:
+      withAddonPolicies:
+        certManager: true
+        imageBuilder: true
+        autoScaler: true
+        awsLoadBalancerController: true
+        cloudWatch: true
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
